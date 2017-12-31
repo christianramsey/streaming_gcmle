@@ -6,13 +6,14 @@ if [ "$#" -ne 1 ]; then
 fi
 
 PROJECT=$DEVSHELL_PROJECT_ID
+PROJECT=sandboai-184920
 BUCKET=$1
 
 cd chapter4
 
 bq rm flights.streaming_delays   # delete existing table
 
-mvn compile exec:java \
+mvn -X compile exec:java \
  -Dexec.mainClass=com.google.cloud.training.flights.AverageDelayPipeline \
       -Dexec.args="--project=$PROJECT \
       --stagingLocation=gs://$BUCKET/staging/ \

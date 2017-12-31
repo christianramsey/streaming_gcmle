@@ -148,7 +148,7 @@ ORDER BY
    # notify about each row in the dataset
    programStartTime = datetime.datetime.utcnow() 
    simStartTime = datetime.datetime.strptime(args.startTime, TIME_FORMAT).replace(tzinfo=pytz.UTC)
-   print 'Simulation start time is {}'.format(simStartTime)
+   print('Simulation start time is', simStartTime)
    while True:
       notify(topics, rows, simStartTime, programStartTime, args.speedFactor)
       if token is None:

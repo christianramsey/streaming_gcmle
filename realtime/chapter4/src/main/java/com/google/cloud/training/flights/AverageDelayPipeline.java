@@ -170,12 +170,9 @@ public class AverageDelayPipeline {
 		String topic = "projects/" + options.getProject() + "/topics/" + event;
 		final FieldNumberLookup eventType = FieldNumberLookup.create(event);
 		PCollection<Flight> flights = p //
-				.apply(event + ":read", //
-						PubsubIO.readStrings().fromTopic(topic)) //
-				.apply(event + ":window",
-						Window.into(SlidingWindows//
-								.of(averagingInterval)//
-								.every(averagingFrequency))) //
+				.apply(event + ":read", PubsubIO.<String>read().topic(topic))
+				.apply(event + ":window", Window.into(SlidingWindows
+						.of(averagingInterval).every(averagingFrequency)))
 				.apply(event + ":parse", ParDo.of(new DoFn<String, Flight>() {
 					@ProcessElement
 					public void processElement(ProcessContext c) throws Exception {
