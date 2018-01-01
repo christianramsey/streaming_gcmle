@@ -41,6 +41,8 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TupleTag;
 import org.joda.time.Duration;
 
+//import com.google.cloud.dataflow.sdk.io.DatastoreIO;
+
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.api.services.bigquery.model.TableSchema;
@@ -164,15 +166,16 @@ public class AverageDelayPipeline {
 				.millis(Math.round(1000 * 60 * (options.getAveragingInterval() / options.getSpeedupFactor())));
 		Duration averagingFrequency = averagingInterval.dividedBy(2); // 2 times in window
 
+
 		System.out.println("Averaging interval = " + averagingInterval);
 		System.out.println("Averaging freq = " + averagingFrequency);
 		
 		String topic = "projects/" + options.getProject() + "/topics/" + event;
 		final FieldNumberLookup eventType = FieldNumberLookup.create(event);
 		PCollection<Flight> flights = p //
-				.apply(event + ":read", PubsubIO.<String>read().topic(topic))
-				.apply(event + ":window", Window.into(SlidingWindows
-						.of(averagingInterval).every(averagingFrequency)))
+				.apply(event + ":read", PubsubIO.readStrings().fromTopic(topic))
+				.apply(event + ":window", Window.into(SlidingWindows .of(averagingInterval))
+				.every(averagingFrequency)
 				.apply(event + ":parse", ParDo.of(new DoFn<String, Flight>() {
 					@ProcessElement
 					public void processElement(ProcessContext c) throws Exception {
